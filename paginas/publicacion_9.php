@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudiante del PSAC elegida presidenta del consejo estudiantil regional.</title>
+<link rel="stylesheet" href="../styles/script_page.css">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <img src="../src/logo-salesianos.png" alt="Logo" class="logo">
+        <a href="index.php" class="nav-title">El Diario Salesiano</a>
+    </div>
+
+    <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <ul class="nav-links" id="navLinks">
+    <li><a href="../index.php">Inicio</a></li>
+    <li><a href="../noticia.php">Noticias</a></li>
+    <li><a href="../laudato.php">Laudato 'SI</a></li>
+    <li><a href="../about.php">Acerca de</a></li>
+    <li id="panel_ctrl"><a href="panel_ctrl.php">Panel de control</a></li>
+    </ul>
+</nav>
+
+
+<main class="container">
+
+<h1 class="header-title">Estudiante del PSAC elegida presidenta del consejo estudiantil regional.</h1>
+
+<div class="meta-publicacion">
+    <p class="tema-publicacion"><strong>Tema:</strong> GENERAL</p>
+    <p class="fecha-publicacion">📅 09/12/2025 09:03 PM</p>
+</div>
+
+<div class='media-container'><img src='../uploads/1765328618_565059797_18320093959240825_786542648977085451_n.webp'></div>
+
+<div class="descripcion-publicacion">Con gran alegria compartimos que la estudiante @saraigz__ Shanel Guzmán, de 6to grado de nuestro centro, ha sido elegida Presidenta del Consejo Estudiantil Regional 06 - La Vega. ????????‍????<br />
+<br />
+Este logro es fruto de su liderazgo, compromiso y espíritu participativo, demostrando que la voz de nuestros estudiantes tiene fuerza y visión para construir una comunidad educativa más justa, activa y representativa. ????????<br />
+<br />
+Felicitamos a Shanel por esta gran distinción y auguramos un período lleno de éxitos y aprendizajes en beneficio de todos los estudiantes de la región. ????</div>
+
+<div class="like-box">
+    <button id="likeToggle" class="like-button" data-id="9" data-liked="">
+        <img id="likeIcon" src="../src/like.png" alt="Like">
+        <span id="likeCount">0</span>
+    </button>
+</div>
+
+
+<div class="comentarios-box">
+    <h3>💬 Comentarios <span>0</span></h3>
+    
+    
+    <form method='POST' action='../scripts/comentar.php'>
+        <input type='hidden' name='id_publicacion' value='9'>
+        <textarea name='comentario' placeholder='Escribe tu comentario...' required></textarea>
+        <button>Publicar comentario</button>
+    </form>
+</div>
+
+</main>
+
+<script>
+    const userRol = window.userRol || "";
+const ctrl = document.getElementById("panel_ctrl");
+
+if (userRol === "admin") {
+    ctrl.style.display = "block";
+} else {
+    ctrl.style.display = "none";
+}
+
+
+
+    console.log(userRol);
+
+    /* --- MENU RESPONSIVE --- */
+    function toggleMenu() {
+        document.getElementById('navLinks').classList.toggle('show');
+    }
+    window.toggleMenu = toggleMenu;
+
+    document.addEventListener('click', function(e) {
+        const links = document.getElementById('navLinks');
+        const hamburger = document.querySelector('.hamburger');
+        if (!links.contains(e.target) && !hamburger.contains(e.target)) {
+            links.classList.remove('show');
+        }
+    });
+// LIKE TOGGLE JS
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("likeToggle");
+    if (!btn) return;
+
+    const icon = document.getElementById("likeIcon");
+    const count = document.getElementById("likeCount");
+
+    btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        const liked = btn.dataset.liked === "1";
+
+        fetch("../scripts/like_toggle.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "id_publicacion=" + id
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error === "not_logged") {
+                alert("Debes iniciar sesión para dar like.");
+                setTimeout(() => {
+        window.location.href = "../sesion.php";
+            }, 2000); // 2 segundos
+                
+                return;
+            }
+
+            count.textContent = data.total;
+
+            icon.style.transform = "scale(0.4)";
+            icon.style.opacity = "0";
+
+            setTimeout(() => {
+                icon.src = "../src/" + (data.status === "added" ? "like2.png" : "like.png");
+                btn.dataset.liked = data.status === "added" ? "1" : "0";
+                icon.style.transform = "scale(1)";
+                icon.style.opacity = "1";
+            }, 180);
+        });
+    });
+});
+</script>
+
+</body>
+
+    <footer>
+        <p>© 2025 El Diario Salesiano — Todos los derechos reservados</p>
+    </footer>
+</html>
